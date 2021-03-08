@@ -12,6 +12,10 @@ class Node
   def next_node
     @next_node
   end
+
+  def set_next_node(value)
+    @next_node = value
+  end
 end
 
 class LinkedList
@@ -20,19 +24,39 @@ class LinkedList
     @ary = []
   end
 
-  # Return list
+  # Update next node after mutation
+  def update_nodes
+    i = 0
+
+    @ary.each do |node|
+      i += 1
+
+      if @ary[i].nil?
+        node.set_next_node(nil)
+      else
+        node.set_next_node(@ary[i].value)        
+      end
+
+    end
+  end
+
+  # Return linked list
   def list
     @ary
   end
 
   # Append value to list
   def append(value)
+    @ary[@ary.length - 1].set_next_node(value)
+
     @ary << Node.new(value)
   end
 
-  # Prepend value ti list
+  # Prepend value in list
   def prepend(value)
     @ary.unshift(Node.new(value))
+
+    update_nodes
   end
 
   # return list length
@@ -58,6 +82,7 @@ class LinkedList
   # Remove last element from list
   def pop
     @ary.pop
+    @ary[@ary.length - 1].set_next_node(nil)
   end
 
   # Return trur or false depending if value is present
@@ -106,7 +131,11 @@ class LinkedList
     str = ""
 
     @ary.each do |node|
-      str += "(#{node.value}) -> "
+      if node.next_node.nil?
+        str += "(#{node.value}) -> nil"
+      else
+        str += "(#{node.value}) -> "
+      end
     end
 
     return str
@@ -117,16 +146,14 @@ class LinkedList
   def insert_at(value, index)
     new_node = Node.new(value)
     @ary.insert(index, new_node)
+
+    update_nodes
   end
 
   # Rermove node at given index
   def remove_at(index)
     @ary.delete_at(index)
-  end
-
-  # Update next node after mutation
-  def update_nodes
-    
+    update_nodes
   end
 
 end
@@ -135,8 +162,19 @@ l = LinkedList.new
 
 l.prepend(0)
 l.append(2)
+l.append(3)
+l.append(21)
 l.insert_at(5, 1)
 
-l.remove_at(1)
-
+puts "Raw Linked list array object:"
 puts l.list.inspect
+
+puts "Linked list as a pretty string:"
+puts l.to_s
+
+puts "Linked list size #{l.size}"
+puts "Linked list head #{l.head.inspect}"
+puts "Linked list tail #{l.tail.inspect}"
+puts "Linked list node at index 1 #{l.at(1).inspect}"
+puts "Return true or false if 5 is present in linked list: #{l.contains?(5)}"
+puts "Find index of 21 else return nil: #{l.find(21)}"
